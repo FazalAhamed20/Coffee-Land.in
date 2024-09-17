@@ -2,12 +2,10 @@
   "name": "ecommerce",
   "version": "1.0.0",
   "description": "An awesome e-commerce application",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "scss:compile": "sass scss:css",
-    "scss:watch": "sass --watch scss:css"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "ecommerce",
@@ -62,11 +60,7 @@
     "util": "^0.12.5",
     "uuid": "^9.0.1"
   },
-  "devDependencies": {
-    "node-sass": "^9.0.0",
-    "sass": "^1.69.6"
-  },
   "engines": {
-     "node": "20.12.1"
+    "node": "20.x"
   }
 }
