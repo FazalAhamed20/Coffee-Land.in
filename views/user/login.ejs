@@ -3,6 +3,19 @@
   body {
     background-color: #edc9a0;
   }
+  .demo-credentials {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  .demo-credentials h3 {
+    margin-top: 0;
+  }
+  .demo-credentials p {
+    margin: 5px 0;
+  }
 </style>
 
 <div class="container">
@@ -16,6 +29,14 @@
       <% if (error1) { %>
       <p style="color: red"><%= error1 %></p>
       <% } %>
+      
+      <!-- Demo Credentials Section -->
+      <div class="demo-credentials">
+        <h3>Demo Login</h3>
+        <p><strong>Email:</strong> demo@example.com</p>
+        <p><strong>Password:</strong> Demopass@123</p>
+      </div>
+
       <div class="input-div" one>
         <div class="i">
           <i class="fas fa-envelope"></i>
