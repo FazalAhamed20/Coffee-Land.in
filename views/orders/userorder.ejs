@@ -1,0 +1,521 @@
+<%- include('header') -%> <%- include('nav', { user, cartCount: cartCount }) -%>
+<style>
+    
+
+  .list-group-item.active {
+    background: #ffc107;
+}
+.top-status ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-around;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+}
+.top-status ul li {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    border: 8px solid #ddd;
+    box-shadow: 1px 1px 10px 1px #ddd inset;
+    margin: 10px 5px;
+}
+.top-status ul li.active {
+    border-color: #ffc107;
+    box-shadow: 1px 1px 20px 1px #ffc107 inset;
+}
+ul.timeline {
+    list-style-type: none;
+    position: relative;
+}
+ul.timeline:before {
+    content: ' ';
+    background: #d4d9df;
+    display: inline-block;
+    position: absolute;
+    left: 29px;
+    width: 2px;
+    height: 100%;
+    z-index: 400;
+}
+ul.timeline > li {
+    margin: 20px 0;
+    padding-left: 30px;
+}
+ul.timeline > li:before {
+    content: '\2713';
+    background: #fff;
+    display: inline-block;
+    position: absolute;
+    border-radius: 50%;
+    border: 0;
+    left: 5px;
+    width: 50px;
+    height: 50px;
+    z-index: 400;
+    text-align: center;
+    line-height: 50px;
+    color: #d4d9df;
+    font-size: 24px;
+    border: 2px solid #d4d9df;
+}
+ul.timeline > li.active:before {
+    content: '\2713';
+    background: #28a745;
+    display: inline-block;
+    position: absolute;
+    border-radius: 50%;
+    border: 0;
+    left: 5px;
+    width: 50px;
+    height: 50px;
+    z-index: 400;
+    text-align: center;
+    line-height: 50px;
+    color: #fff;
+    font-size: 30px;
+    border: 2px solid #28a745;
+}
+.order-status-btn {
+    padding: 8px;
+    background-color: #007bff; 
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.order-status-btn:hover {
+    background-color: #0056b3; 
+}
+.pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        margin-bottom: -5px;
+    }
+
+    .pagination a, .pagination span {
+        margin: 0 5px 3px 3px;
+        margin-bottom: -5px;  
+        padding: 8px 16px;
+        background-color: #3E2723;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+    .pagination a:hover {
+        background-color: #5D4037;
+        color: white; 
+    }
+
+    .pagination span {
+        background-color: #3E2723;
+        margin-bottom: -5px;  
+    }
+    .my-5 {
+    border-bottom: 2px solid #ccc;
+}
+.no-address-message {
+  text-align: center;
+  margin-top: 100px; /* Adjust as needed */
+  font-size: 18px;
+  color: #3E2723;
+  width: 100%;
+}
+
+</style>
+<body>
+    <% if (orders.length === 0) { %>
+        <p class="no-address-message">No Orders found.</p>
+      <% } else { %>
+    <% orders.forEach(function(order) { %>
+        <section class="my-5" data-order-id="<%= order.orderID %>" data-order-status="<%= order.status %>" style="border-bottom: 2px solid #ccc;">
+            <div id="cancelledOrderAlert-<%= order.orderID %>"></div>
+<div class="modal fade" id="cancelProductConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="cancelProductConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cancelProductConfirmationModalLabel">Confirm Product Cancellation</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to cancel this product?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-danger" onclick="cancelProductConfirmed()">Proceed with Cancellation</button>
+        </div>
+      </div>
+    </div>
+  </div>
+         <div class="modal fade" id="cancelOrderModal-<%= order.orderID %>" tabindex="-1" role="dialog" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cancelOrderModalLabel">Cancel Order Confirmation</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="collapse" id="collapseExample">
+                        <div class="card card-body">
+                            <h2>Cancellation Policy</h2>
+                            <p>We understand that circumstances may arise, and you may need to cancel your coffee shop delivery order. Please take note of our cancellation policy outlined below:</p>
+                            <ol>
+                                <li>
+                                    <strong>Cancellation Window:</strong>
+                                    <ul>
+                                        <li>Orders can be canceled within 30 minutes of placing the order.</li>
+                                        <li>Once the order is in the processing stage, cancellations may not be possible.</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <strong>Cancellation Process:</strong>
+                                    <ul>
+                                        <li>To cancel an order, log in to your account and navigate to the order history section.</li>
+                                        <li>Click on the respective order and follow the cancellation instructions.</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <strong>Refund Policy:</strong>
+                                    <ul>
+                                        <li>Orders canceled within the allowed time frame will be eligible for a full refund.</li>
+                                        <li>Refunds will be processed within 3-5 business days.</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <strong>Exceptions:</strong>
+                                    <ul>
+                                        <li>We reserve the right to refuse cancellations for orders that are already in the preparation or delivery stage.</li>
+                                        <li>Special circumstances may be considered; please contact our customer support for assistance.</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <strong>Contact Information:</strong>
+                                    <ul>
+                                        <li>For cancellation inquiries or assistance, please reach out to our customer support team at <a href="mailto:support@yourcoffeeshop.com">support@yourcoffeeshop.com</a> or call (123) 456-7890.</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                            <p>By placing an order with us, you acknowledge and agree to abide by our cancellation policy.</p>
+                        </div>
+                      </div>
+                    <div class="modal-body">
+                        <h6><i class="fas fa-exclamation-triangle text-warning"></i> Before you cancel, please consider:</h6>
+                        <ul>
+                            <li>Your cancellation may be subject to our cancellation policy.</li>
+                            <li>Review our <a class="" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                Cancellation Policy</a>.</li>
+                        </ul>
+                        <p><i class="fas fa-info-circle text-info"></i> Are you sure you want to cancel this order?</p>
+                        <label for="cancelReason">Reason for cancellation:</label>
+                        <textarea class="form-control" id="cancelReason-<%= order.orderID %>" rows="3" placeholder="Enter your reason"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger cancel-order-btn" onclick="confirmCancelOrder('<%= order.orderID %>')">
+                            Proceed with Cancellation
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="main-body">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="top-status">
+                                    <h5><%= order.orderID %></h5>
+                                    <% if (order.status.toLowerCase() !== 'cancelled') { %>
+                                        <div>
+                                            <% if (order.status.toLowerCase() === 'delivered') { %>
+                                                <a  href="/download-invoice/<%= encodeURIComponent(order.orderID) %>" class="btn btn-success mx-2 download-invoice-btn"
+                                                   data-order-id="<%= order.orderID %>"
+                                                   target="_blank"
+                                                   onclick="generatePDF('<%= order.orderID %>')">
+                                                   Download Invoice
+                                                </a>
+                                            <% } %>
+                                            <% if (order.status === 'delivered') { %>
+                                                
+                                            <% } else { %>
+                                                <button class="btn btn-danger cancel-order-btn" data-toggle="modal" data-target="#cancelOrderModal-<%= order.orderID %>" data-order-id="<%= order.orderID %>">
+                                                    Cancel Order
+                                                </button>
+                                            <% } %>
+                                            
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mt-4">
+                            <div class="card-body p-0 table-responsive">
+                                <h4 class="p-3 mb-0">Product Description</h4>
+                                <table class="table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Product</th>
+                                            <th scope="col">Quantity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% order.products.forEach(function(product) { %>
+                                            <tr>
+                                                <td><strong><%= product.product.name %></strong></td>
+                                                <td><span>Quantity: <%= product.quantity %></span></td>
+                                                <td>
+                                                    <% if (order.status.toLowerCase() !== 'cancelled' && order.products.length > 1 && order.status.toLowerCase() !== 'delivered') { %>
+                                                        <button class="btn btn-danger cancel-product-btn"
+                                                            data-order-id="<%= order.orderID %>"
+                                                            data-product-id="<%= product.product._id %>"
+                                                            onclick="showCancelProductConfirmationModal('<%= order.orderID %>', '<%= product.product._id %>')">
+                                                            Cancel Product
+                                                        </button>
+                                                    <% } %>
+                                                    
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                    
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card mt-2">
+                            <div class="card-body">
+                                <span>Status:</span>
+                                <span class="badge <%= order.status.toLowerCase() === 'cancelled' ? 'badge-danger' : (order.status.toLowerCase() === 'pending' ? 'badge-warning' : (order.status.toLowerCase() === 'processing' ? 'badge-info' : (order.status.toLowerCase() === 'shipped' ? 'badge-primary' : 'badge-success'))) %>">
+                                    <%= order.status %>
+                                </span>
+                             <% if (order.status.toLowerCase() !== 'cancelled') { %>
+                             <div class="progress mt-2">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar"
+                                    id="<%= order.orderID %>-pending-progress" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                                    Pending
+                                </div>
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar"
+                                    id="<%= order.orderID %>-processing-progress" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+                                    Processing
+                                </div>
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar"
+                                    id="<%= order.orderID %>-shipped-progress" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                                    Shipped
+                                </div>
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar"
+                                    id="<%= order.orderID %>-delivered-progress" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                                    Delivered
+                                </div>
+                            </div>
+                            <% } %>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Order Summary</h5>
+                                <p>Total Price: ₹<%= order.totals.grandTotal.toFixed(2) %></p>
+                                <p>Ordered Date: <%= order.orderDate %></p>
+                                <p>Ordered Time: <%= order.orderTime %></p>
+                            </div>
+                        </div>
+                        <% if (order.status.toLowerCase() !== 'cancelled') { %>
+                            <div class="card mt-2">
+                                <div class="card-body">
+                                    <h5 class="card-title">Order Details</h5>
+                                    <p>Estimated Delivery Date: <%= order.deliveryDate %></p>
+                                    <p>Estimated Delivery Time: <%= order.deliveryTime %></p>
+                                    <p>Payment Method: <%= order.paymentMethod %></p>
+                                    <p>Address: <%= order.address.houseName %>, <%= order.address.locality %>, <%= order.address.city %>, <%= order.address.district %>, <%= order.address.state %>, <%= order.address.pincode %></p>
+                                </div>
+                            </div>
+                        <% } %>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <% }); %>
+    <% } %>
+    <% if (totalPages > 1) { %>
+        <div class="pagination">
+            <% if (page > 1) { %>
+                <a href="?page=<%= page - 1 %>&limit=<%= limit %>" class="btn">Previous</a>
+            <% } %>
+            <span>Page <%= page %></span>
+            <% if (page < totalPages) { %>
+                <a href="?page=<%= page + 1 %>&limit=<%= limit %>" class="btn ">Next</a>
+            <% } %>
+        </div>
+    <% } %>
+   
+    
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>  
+<script src="https://unpkg.com/jspdf-invoice-template@1.4.3/dist/index.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script>
+    window.onload = function () {
+    console.log('Window loaded successfully');
+    var orderSections = document.querySelectorAll('.my-5');
+    orderSections.forEach(function (section) {
+        var orderID = section.getAttribute('data-order-id');
+        var status = section.getAttribute('data-order-status');
+        console.log('Processing order ID:', orderID, 'with status:', status);
+        updateProgressBar(orderID, status.toLowerCase());
+        displayOrderStatus(orderID, status);
+    });
+};
+function updateProgressBar(orderID, status) {
+    console.log('Updating progress bar for order ID:', orderID, 'and status:', status);
+    const progressBar = document.getElementById(orderID + '-' + status + '-progress');
+    if (progressBar) {
+        progressBar.style.display = 'block';
+        progressBar.style.width = getStatusWidth(status);
+    }
+}
+    
+function displayOrderStatus(orderID, status) {
+    console.log('Displaying order status for order ID:', orderID, 'and status:', status);
+    const statusElement = document.getElementById(orderID + '-status');
+    if (statusElement) {
+        statusElement.innerHTML = status;
+    }
+}
+function getStatusWidth(status) {
+    switch (status) {
+        case 'pending':
+            return '25%';
+        case 'processing':
+            return '50%';
+        case 'shipped':
+            return '75%';
+        case 'delivered':
+            return '100%';
+        default:
+            return '0%';
+    }
+}
+</script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function confirmCancelOrder(orderID) {
+        const cancellationReasonElement = document.getElementById('cancelReason-' + orderID);
+        const cancellationReason = cancellationReasonElement.value.trim();
+        
+        if (cancellationReason !== '') {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/cancel-order', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText);
+                    console.log('Order canceled and reason saved:', data);
+                    const modal = document.getElementById('cancelOrderModal-' + orderID);
+                    modal.style.display = 'none';
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 2000);
+                    const alertContainer = document.getElementById('cancelledOrderAlert-' + orderID);
+                    const alertMessage = `Order ${orderID} has been successfully canceled.`;
+                    alertContainer.innerHTML = `
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>${alertMessage}</strong>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    console.error('Error canceling order. Server responded with:', xhr.status);
+                }
+            };
+            xhr.onerror = function () {
+                console.error('Request failed');
+            };
+            xhr.send(JSON.stringify({
+                orderID: orderID,
+                cancellationReason: cancellationReason,
+            }));
+        } else {
+            console.error('Cancellation reason cannot be empty.');
+        }
+    }
+</script>
+<script>
+    function showCancelProductConfirmationModal(orderID, productID) {
+        document.getElementById('cancelProductConfirmationModal').setAttribute('data-order-id', orderID);
+        document.getElementById('cancelProductConfirmationModal').setAttribute('data-product-id', productID);
+        var modal = new bootstrap.Modal(document.getElementById('cancelProductConfirmationModal'));
+        modal.show();
+    }
+    function cancelProductConfirmed() {
+        const orderID = document.getElementById('cancelProductConfirmationModal').getAttribute('data-order-id');
+        const productID = document.getElementById('cancelProductConfirmationModal').getAttribute('data-product-id');
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/cancelProduct', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                console.log(data);
+                var modal = new bootstrap.Modal(document.getElementById('cancelProductConfirmationModal'));
+                modal.hide();
+                window.location.reload(); 
+            } else {
+                console.error('Error:', xhr.statusText);
+            }
+        };
+        xhr.onerror = function () {
+            console.error('Network error occurred');
+        };
+        xhr.send(JSON.stringify({ orderId: orderID, productId: productID }));
+    }
+</script>
+<script>
+    document.getElementById('showCancellationPolicy').addEventListener('click', function() {
+        document.getElementById('cancellationPolicyModal').style.display = 'block';
+    });
+    function closeCancellationPolicyModal() {
+        document.getElementById('cancellationPolicyModal').style.display = 'none';
+    }
+</script>
+<script>
+    function generatePDF(orderID) {
+        const confirmed = confirm('Are you sure you want to download the invoice for Order ID ' + orderID + '?');
+        if (confirmed) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', '/download-invoice/' + encodeURIComponent(orderID), true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        console.log('Invoice generated and downloaded successfully');
+                    } else {
+                        console.error('Error generating or downloading the invoice:', xhr.statusText);
+                    }
+                }
+            };
+            xhr.send();
+        }
+    }
+</script>
+</html>

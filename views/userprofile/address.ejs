@@ -1,0 +1,144 @@
+<!-- views/userprofile/address.ejs -->
+
+<%- include('header') -%>
+ <%- include('nav', { user: user }) -%>
+
+<style>
+  body {
+    background-color: #edc9a0;
+    font-family: "Quicksand", sans-serif;
+    transition: background-color 0.5s ease;
+    margin: 0;
+  overflow-y: scroll;
+  }
+  .address-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+    padding-left: 60px;
+    padding-top: 20px;
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+  .center-button {
+    margin-top: 55px;
+    padding: 15px 30px;
+    background-color: #3E2723;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  .address-card {
+   
+    position: relative;
+    width: 300px;
+    padding: 15px;
+    background-color: #ffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 15px;
+    text-align: left;
+    transition: transform 0.3s ease;
+    transform-origin: center bottom;
+  }
+
+  .address-card:hover {
+    transform: scale(1.05);
+  }
+
+  .field-label {
+    font-weight: bold;
+    color: #3E2723;
+  }
+
+  .icons {
+    display: flex;
+    justify-content: flex-end;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+
+  .delete-address-icon {
+    font-size: 20px;
+    color: red;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    margin-left: 10px;
+  }
+  .edit-address-icon{
+    font-size: 20px;
+    color: green;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    margin-left: 10px;
+  }
+
+  .no-address-message {
+  text-align: center;
+  margin-top: 50px; /* Adjust as needed */
+  font-size: 18px;
+  color: #3E2723;
+  width: 100%;
+}
+
+
+  
+
+
+  .add{
+    display: flex;
+        justify-content: center;
+        margin-top: 50px;
+  }
+</style>
+
+<div class="add">
+  <a href="/addaddress" class="center-button">Add Address</a>
+</div>
+<% if (addresses.length === 0) { %>
+  <p class="no-address-message">No addresses found.</p>
+<% } else { %>
+<div class="address-container">
+ 
+  <% addresses.forEach(function(address, index) { %>
+  <div class="address-card">
+    <div class="icons">
+      <a
+        href="/editaddressform/<%= address._id %>"
+        class="edit-address-icon"
+      >
+        <i class="fas fa-pencil-alt"></i>
+      </a>
+      <a
+        href="/deleteaddress/<%= address._id %>"
+        class="delete-address-icon"
+      >
+        <i class="fas fa-trash-alt"></i>
+      </a>
+    </div>
+
+    <h2>Address <%= index + 1 %></h2>
+    <p><span class="field-label">Mobile:</span> <%= address.mobile %></p>
+    <p><span class="field-label">Email:</span> <%= address.email %></p>
+    <p><span class="field-label">Pincode:</span> <%= address.pincode %></p>
+    <p><span class="field-label">House Name:</span> <%= address.houseName %></p>
+    <p><span class="field-label">Locality:</span> <%= address.locality %></p>
+    <p><span class="field-label">City:</span> <%= address.city %></p>
+    <p><span class="field-label">District:</span> <%= address.district %></p>
+    <p><span class="field-label">State:</span> <%= address.state %></p>
+  </div>
+  <% }); %>
+</div>
+<% } %>
+
+<%- include('footer') -%>

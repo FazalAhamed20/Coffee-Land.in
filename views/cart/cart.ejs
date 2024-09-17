@@ -1,0 +1,702 @@
+<%- include('header') -%>
+<%- include('nav') -%>
+<style>
+  /* Global settings */
+  body {
+    font-family: "Roboto", sans-serif;
+    background-color: #f5f2eb; 
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  h1 {
+    text-align: center;
+    padding: 20px 0;
+    color: #5c3d2e; 
+    animation: fadeIn 1s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .cart-container {
+    position: fixed;
+    width: 80%;
+    background-color: #f9f5f2; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    animation: slideIn 0.5s ease; 
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .cart-item {
+    display: flex;
+    border-bottom: 1px solid #e0dedc; 
+    padding: 15px;
+    transition: background-color 0.3s ease;
+  }
+
+  .cart-item:hover {
+    background-color: #e9e7e5;
+  }
+
+  .product-image img {
+    width: 70px;
+    height: 70px;
+    border-radius: 5px;
+    margin-right: 15px;
+    animation: fadeInImage 0.5s ease;
+  }
+
+  @keyframes fadeInImage {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .product-details {
+    flex-grow: 1;
+  }
+
+  .product-title {
+    font-weight: bold;
+    font-size: 18px;
+    color: #5c3d2e; 
+  }
+
+  .product-price,
+  .product-quantity,
+  .product-total,
+  .remove-product {
+    font-size: 16px;
+    color: #5c3d2e;
+    animation: fadeInText 0.5s ease; 
+  }
+
+  @keyframes fadeInText {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .remove-product {
+    color: #96372e; 
+    cursor: pointer;
+    margin-left: auto;
+    transition: color 0.3s ease;
+  }
+
+  .remove-product:hover {
+    color: #721d1b;
+  }
+
+  .totals {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f5f2; 
+    border-top: 1px solid #e0dedc; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: fadeInTotals 1s ease; 
+  }
+
+  @keyframes fadeInTotals {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .totals-item {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .totals-label {
+    color: #5c3d2e; 
+  }
+
+  .totals-value {
+    font-weight: bold;
+    color: #5c3d2e; 
+  }
+
+  .checkout:hover {
+    background-color: #3c271f; 
+  }
+
+  @keyframes fadeInCheckout {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .product-total {
+    margin-right: 100px;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  body {
+    font-family: system-ui, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+  }
+
+  button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 0;
+    display: flex;
+    align-items: center;
+    padding: 16px 20px 16px 15px;
+    height: 56px;
+    position: relative;
+    font-family: inherit;
+    font-size: 1em;
+    line-height: 1em;
+    font-weight: 500;
+    background-color: #3c271f;
+    color: white;
+    cursor: pointer;
+    border-radius: 32px;
+
+    &:hover,
+    &:active {
+      background-color: #5c3d2e;
+    }
+  }
+
+  #cart {
+    margin-right: 12px;
+    transform-origin: 20% 100%;
+    opacity: 1;
+  }
+
+  @keyframes slide-up-fade {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(-16px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes roll-out {
+    0% {
+      transform: translate(0) rotate(0);
+    }
+    20% {
+      transform: translate(0) rotate(-70deg);
+      opacity: 1;
+    }
+    50% {
+      transform: translate(0) rotate(-45deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(140px) rotate(-47deg);
+      opacity: 0;
+    }
+  }
+
+  .btf1 span {
+    animation: slide-up-fade 150ms 1;
+    animation-fill-mode: both;
+  }
+
+  .btf1 #cart {
+    animation: roll-out 1s 1 150ms;
+    animation-timing-function: ease-in;
+    animation-fill-mode: both;
+  }
+
+  @keyframes checkmark {
+    from {
+      stroke-dashoffset: 26px;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  #check {
+    position: absolute;
+    left: calc(50% - 12px);
+  }
+
+  #check path {
+    stroke-dasharray: 26px;
+    stroke-dashoffset: 26px;
+  }
+
+  .btf1 #check path {
+    animation: checkmark 150ms 1 1150ms;
+    animation-timing-function: ease-in;
+    animation-fill-mode: both;
+  }
+
+  /* .btf1 button {
+    background-color: #20bf6b;
+    transition-delay: 1150ms;
+  } */
+  /* Add styles for the error flash message */
+  .flash-message.error {
+    color: red;
+    text-align: center;
+  }
+  body {
+    font-family: "Roboto", sans-serif;
+    background-color: #f5f2eb;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  
+
+  .cart-container {
+    padding: 20px;
+      position: fixed;
+      top: 50px; /* Adjust this value based on your navbar height */
+   
+      max-height: calc(100vh - 50px);
+    position: fixed;
+    width: 80%;
+    background-color: #f9f5f2;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    animation: slideIn 0.5s ease;
+    margin: 20px;
+    overflow-y: scroll;
+    
+  }
+
+  @media screen and (max-width: 768px) {
+   
+    .cart-container {
+      width: 90%;
+    }
+
+    .totals-item {
+      flex-direction: column;
+    }
+  }
+
+  .cart-item {
+    display: flex;
+    border-bottom: 1px solid #e0dedc;
+    padding: 15px;
+    transition: background-color 0.3s ease;
+  }
+
+ 
+
+  .totals {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f5f2;
+    border-top: 1px solid #e0dedc;
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    animation: fadeInTotals 1s ease;
+  }
+
+  @keyframes fadeInTotals {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .totals-item {
+    font-size: 18px;
+    margin-bottom: 10px;
+    display: flex; 
+    justify-content: space-between;
+    width: 100%; 
+  }
+
+  .totals-label {
+    color: #5c3d2e;
+    flex-grow: 1; 
+  }
+
+  .totals-value {
+    font-weight: bold;
+    color: #5c3d2e;
+  }
+
+  .checkout:hover {
+    background-color: #3c271f;
+  }
+  @media screen and (max-width: 176px) {
+    .product-remove {
+      text-align: center; 
+      margin-top: 10px; 
+    }
+  }
+  .product-remove {
+    margin-right: 200px;
+  }
+</style>
+
+<!-- views/cart.ejs -->
+<div class="cart-container">
+  <a href="/">
+    <h1>Your Coffee Cart</h1>
+    <% if (messages.error && messages.error.length > 0) { %>
+    <div class="flash-message error"><%= messages.error[0] %></div>
+    <% } %>
+  </a>
+
+  <div class="cart-items">
+    <% cartItems.forEach(item => { %>
+    <div class="cart-item">
+      <div class="product-image">
+        <% if (item.productId && item.productId.image) { %>
+        <img
+          src="/assets/product-images/<%= item.productId.image %>"
+          alt="<%= item.productId.name %>"
+        />
+        <% } else { %>
+        <p>No image available</p>
+        <% } %>
+      </div>
+      <div class="product-details">
+        <div class="product-title">
+          <%= item.productId && item.productId.name %>
+        </div>
+        <div class="product-price">
+          ₹<%= (item.productId && (item.productId.productOfferprice || item.productId.Offerprice ||
+          item.productId.price)).toFixed(2) %>
+        </div>
+        <div class="product-quantity">
+          Quantity:
+          <input
+              type="number"
+              value="<%= item.quantity %>"
+              min="1"
+              max="<%= item.productId.quantity %>"
+              data-product-id="<%= item.productId._id %>"
+              onchange="updateQuantity(this)"
+              oninput="validateQuantity(this)"
+          />
+          <% if (item.productId.quantity <= 1) { %>
+              <span class="out-of-stock">Out of Stock</span>
+          <% } %>
+      </div>
+        <div class="product-remove">
+          <a
+            href="javascript:void(0);"
+            class="remove-product"
+            onclick="showConfirmationModal('<%= item.productId._id %>')"
+          >
+            Remove
+          </a>
+        </div>
+        
+      </div>
+
+      <div class="product-total">
+        ₹<%= (item.productId && (item.productId.productOfferprice || item.productId.Offerprice ||
+        item.productId.price) * item.quantity).toFixed(2) %>
+      </div>
+    </div>
+    <% }); %>
+  </div>
+
+  <div class="totals">
+    <div class="totals-item">
+      <div class="totals-label">Subtotal:</div>
+      <div class="totals-value" id="cart-subtotal">
+        ₹<%=totals. subtotal.toFixed(2) %>
+      </div>
+    </div>
+    <div class="totals-item">
+      <div class="totals-label">Tax (5%):</div>
+      <div class="totals-value" id="cart-tax">₹<%=totals.tax.toFixed(2) %></div>
+    </div>
+    <div class="totals-item">
+      <div class="totals-label">Shipping:</div>
+      <div class="totals-value" id="cart-shipping">
+        ₹<%=totals.shipping.toFixed(2) %>
+      </div>
+    </div>
+    <div class="totals-item totals-item-total">
+      <div class="totals-label">Grand Total:</div>
+      <div class="totals-value" id="cart-total">
+        ₹<%=totals.grandTotal.toFixed(2) %>
+      </div>
+    </div>
+    <button id="checkoutButton" onclick="return delayedRedirect()">
+      <svg style="width: 24px; height: 24px" viewBox="0 0 24 24" id="cart">
+        <path
+          fill="#ffffff"
+          d="M17,18A2,2 0 0,1 19,20A2,2 0 0,1 17,22C15.89,22 15,21.1 15,20C15,18.89 15.89,18 17,18M1,2H4.27L5.21,4H20A1,1 0 0,1 21,5C21,5.17 20.95,5.34 20.88,5.5L17.3,11.97C16.96,12.58 16.3,13 15.55,13H8.1L7.2,14.63L7.17,14.75A0.25,0.25 0 0,0 7.42,15H19V17H7C5.89,17 5,16.1 5,15C5,14.65 5.09,14.32 5.24,14.04L6.6,11.59L3,4H1V2M7,18A2,2 0 0,1 9,20A2,2 0 0,1 7,22C5.89,22 5,21.1 5,20C5,18.89 5.89,18 7,18M16,11L18.78,6H6.14L8.5,11H16Z"
+        />
+      </svg>
+      <span>Checkout</span>
+      <svg id="check" style="width: 24px; height: 24px" viewBox="0 0 24 24">
+        <path
+          stroke-width="2"
+          fill="none"
+          stroke="#ffffff"
+          d="M 3,12 l 6,6 l 12, -12"
+        />
+      </svg>
+    </button>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+<script>
+   function validateQuantity(input) {
+        // Ensure the value is not less than 1
+        if (input.value < 1) {
+            input.value = 1;
+        }
+    }
+</script>
+
+<script>
+  async function updateCartTotals() {
+    try {
+      const response = await fetch("/updateTotals", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+       
+      });
+
+      if (!response.ok) {
+        console.error("Failed to update cart totals:", response.statusText);
+       
+        return;
+      }
+
+      const result = await response.json();
+      console.log("Cart totals updated successfully:", result.totals);
+
+      
+      document.getElementById(
+        "cart-subtotal"
+      ).innerText = `₹${result.totals.subtotal.toFixed(2)}`;
+      document.getElementById(
+        "cart-tax"
+      ).innerText = `₹${result.totals.tax.toFixed(2)}`;
+      document.getElementById(
+        "cart-shipping"
+      ).innerText = `₹${result.totals.shipping.toFixed(2)}`;
+      document.getElementById(
+        "cart-total"
+      ).innerText = `₹${result.totals.grandTotal.toFixed(2)}`;
+    } catch (error) {
+      console.error("Error updating cart totals:", error);
+      
+    }
+  }
+</script>
+
+<script>
+  async function updateQuantity(input) {
+    const productId = input.getAttribute("data-product-id");
+    const quantity = input.value;
+
+    try {
+      const response = await fetch(`/updatequantity/${productId}/${quantity}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        console.error("Failed to update quantity:", response.statusText);
+       
+        return;
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+      
+        updateUITotals(result.totals);
+        
+        location.reload();
+      } else {
+        console.error("Failed to update quantity:", result.message);
+      
+      }
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+      
+    }
+  }
+
+  function updateUITotals(totals) {
+ 
+    document.getElementById(
+      "cart-subtotal"
+    ).textContent = `₹${totals.subtotal.toFixed(2)}`;
+    document.getElementById("cart-tax").textContent = `₹${totals.tax.toFixed(
+      2
+    )}`;
+    document.getElementById(
+      "cart-shipping"
+    ).textContent = `₹${totals.shipping.toFixed(2)}`;
+    document.getElementById(
+      "cart-total"
+    ).textContent = `₹${totals.grandTotal.toFixed(2)}`;
+  }
+</script>
+
+<script>
+  function delayedRedirect() {
+    
+    setTimeout(function() {
+        window.location.href = "/checkout";
+    }, 1000);
+    
+  }
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var taxRate = 0.05;
+    var shippingRate = 15.0;
+    var fadeTime = 300;
+    document
+      .querySelectorAll(".product-quantity input")
+      .forEach(function (input) {
+        input.addEventListener("change", function () {
+          updateQuantity(this);
+        });
+      });
+
+    document.querySelectorAll(".remove-product").forEach(function (button) {
+      button.addEventListener("click", function () {
+        removeItem(this);
+        updateCartBadge();
+      });
+    });
+
+    function recalculateCart() {
+      var subtotal = 0;
+
+      
+      document.querySelectorAll(".cart-item").forEach(function (item) {
+        var price = parseFloat(
+          item.querySelector(".product-price").textContent.replace("₹", "")
+        );
+        var quantity = parseInt(
+          item.querySelector(".product-quantity input").value
+        );
+        var total = price * quantity;
+
+        subtotal += total;
+
+        item.querySelector(".product-total").textContent =
+          "₹" + total.toFixed(2);
+      });
+
+     
+      var tax = subtotal * taxRate;
+      var shipping = subtotal > 0 ? shippingRate : 0;
+      var total = subtotal + tax + shipping;
+
+    
+      document.getElementById("cart-subtotal").textContent =
+        "₹" + subtotal.toFixed(2);
+      document.getElementById("cart-tax").textContent = "₹" + tax.toFixed(2);
+      document.getElementById("cart-shipping").textContent =
+        "₹" + shipping.toFixed(2);
+      document.getElementById("cart-total").textContent =
+        "₹" + total.toFixed(2);
+
+      updateCartBadge(); 
+    }
+    function updateQuantity(quantityInput) {
+      var item = quantityInput.closest(".cart-item");
+      var price = parseFloat(
+        item.querySelector(".product-price").textContent.replace("₹", "")
+      );
+      var quantity = parseInt(quantityInput.value);
+      var total = price * quantity;
+
+      item.querySelector(".product-total").textContent = "₹" + total.toFixed(2);
+
+      recalculateCart(); 
+    }
+  });
+</script>
+<script>
+  const btn = document.getElementById("checkoutButton");
+
+  btn.addEventListener("click", () => {
+    document.documentElement.classList.toggle("btf1");
+  });
+</script>
+<script>
+  function showConfirmationModal(productId) {
+    const isConfirmed = confirm('Are you sure you want to remove this item from your cart?');
+
+    if (isConfirmed) {
+      window.location.href = `/removeItem/${productId}`;
+    }
+  }
+</script>
+
+
+<%- include('footer') -%>

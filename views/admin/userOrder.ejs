@@ -1,0 +1,454 @@
+<%- include('header') -%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Orders</title>
+    <!-- Add these links before your existing script tag -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+
+    <style>
+        body {
+            background-size: cover;
+            margin: 0;
+            background-color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 20px;
+            color: black;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .action-buttons {
+            margin-top: 20px;
+            text-align: center;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .add-product-button,
+        .edit-button,
+        .delete-button {
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        .add-product-button {
+            background-color: #45a049;
+            color: black;
+            text-decoration: none;
+            border: none;
+        }
+
+        .edit-button,
+        .delete-button {
+            background-color: red;
+            color: white;
+            border: none;
+            text-decoration: none;
+        }
+
+        table {
+            width: 98%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-left: 10px;
+            margin-right: 50px;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            color: black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        a {
+            color: white;
+            background-color: #45a049;
+        }
+
+        a:hover {
+            color: white;
+        }
+
+        @media only screen and (max-width: 768px) {
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin: 10px;
+            }
+
+            th,
+            td {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: left;
+                width: 100%;
+                display: block;
+            }
+
+            td.description {
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            th,
+            td:before {
+                display: none;
+            }
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 5px; /* Adjust the gap as needed */
+}
+
+.pagination a {
+    display: inline-block;
+    padding: 8px 16px;
+    text-decoration: none;
+    color: black;
+    border: 1px solid #45a049;
+    border-radius: 4px;
+}
+
+.pagination a.active {
+    background-color: #45a049;
+    color: white;
+}
+
+.pagination a:hover {
+    background-color: #45a049;
+    color: white;
+}
+
+.pagination .disabled a {
+    pointer-events: none;
+    cursor: default;
+    color: #ccc;
+}
+
+.pagination .disabled a:hover {
+    background-color: transparent;
+}
+
+.modal {
+            display: none;
+            position: fixed;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .modal-content {
+            margin-top: 20px;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        #confirmBtn {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        #confirmBtn:hover {
+            background-color: #45a049;
+        }
+
+@media only screen and (max-width: 768px) {
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+.updateStatusBtn{
+    background-color: #4caf50;
+    color: white;
+}
+@media only screen and (max-width: 768px) {
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 10px;
+    }
+
+    th,
+    td {
+        border: 1px solid black;
+        padding: 10px;
+        margin: 5px 0;
+        text-align: left;
+        width: 100%;
+        display: block;
+    }
+
+    td.description {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    th,
+    td:before {
+        display: none;
+    }
+
+    /* Styles for status and pagination on smaller screens */
+    .updateStatusBtn {
+        background-color: #4caf50;
+        color: white;
+        margin-top: 10px; /* Adjust margin as needed */
+        padding: 8px; /* Adjust padding as needed */
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10px; /* Adjust margin as needed */
+    }
+
+    .pagination a {
+        display: inline-block;
+        padding: 8px 16px;
+        text-decoration: none;
+        color: black;
+        border: 1px solid #45a049;
+        margin: 0 4px;
+        border-radius: 4px;
+    }
+
+    .pagination a.active {
+        background-color: #45a049;
+        color: white;
+    }
+
+    .pagination a:hover {
+        background-color: #45a049;
+        color: white;
+    }
+
+    .pagination .disabled a {
+        pointer-events: none;
+        cursor: default;
+        color: #ccc;
+    }
+
+    .pagination .disabled a:hover {
+        background-color: transparent;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .modal {
+        width: 90%;
+        max-width: 300px;
+        margin: 10% auto;
+    }
+}
+
+
+    </style>
+</head>
+<body>
+    <h1>Admin Orders</h1>
+    <a href="/adhome">Home</a>
+            <% orders.forEach(order => { %>
+                <div id="confirmationModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal()">&times;</span>
+                        <p>Are you sure you want to update the order status?</p>
+                        <button id="confirmBtn">Confirm</button>
+                    </div>
+                </div>
+                <table class="order-table">
+                    <form action="/updateOrderStatus" method="POST" id="orderStatusForm">
+                    <thead>
+                        <tr>
+                            <td colspan="2">
+                                <strong style="color: #333;">Order ID: <%= order.orderID %></strong>
+                                <br>
+                                <strong style="color: #333;">Total Price: ₹<%= order.totals.grandTotal.toFixed(2) %></strong>
+                            </td>
+                            <td colspan="2">
+                                <% if (order.status === 'delivered') { %>
+                                    <div id="successMessage" class="text-success">Successfully Delivered</div>
+                                <% } else if (order.status === 'cancelled') { %>
+                                    <div id="cancelledMessage" class="text-danger">Order Cancelled</div>
+                                <% } else { %>
+                                    Status:
+                                    <select class="orderStatusDropdown" name="orderStatus_<%= order.orderID %>" data-orderid="<%= order.orderID %>" <%= order.status === 'delivered' ? 'disabled' : '' %>>
+                                        <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                        <option value="processing" <%= order.status === 'processing' ? 'selected' : '' %>>Processing</option>
+                                        <option value="shipped" <%= order.status === 'shipped' ? 'selected' : '' %>>Shipped</option>
+                                        <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                                    </select>
+                                    <button type="submit" class="updateStatusBtn">Update Status</button>
+                                <% } %>
+                            </td>
+                        </tr>
+                        
+                    </thead>
+                    <tbody>
+                        <% order.products.forEach(product => { %>
+                            <tr>
+                                <td>Product Name:</td>
+                                <td><%= product.product.name %></td>
+                                <td>Quantity:</td>
+                                <td><%= product.quantity %></td>
+                            </tr>
+                            <tr>
+                                <td>Delivery Time:</td>
+                                <td><%= order.deliveryTime %></td>
+                                <td>Delivery Date:</td>
+                                <td><%= order.deliveryDate %></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+                <% }); %>  
+        </form>
+        <div class="pagination-container"></div>
+        <ul class="pagination">
+            <a href="?page=<%= currentPage - 1 %>" class="<%= currentPage === 1 ? 'disabled' : '' %>">Previous</a>
+            <% for (let i = 1; i <= 3; i++) { %>
+                <a href="?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+            <% } %>
+            <a href="?page=<%= currentPage + 1 %>" class="<%= currentPage === totalPages ? 'disabled' : '' %>">Next</a>
+            </ul>
+        </div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    document.getElementById('orderStatusForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        openModal(); 
+    });
+    function openModal() {
+        const modal = document.getElementById('confirmationModal');
+        const confirmBtn = document.getElementById('confirmBtn');
+        modal.style.display = 'block';
+        confirmBtn.addEventListener('click', function () {
+            closeModal(); 
+            submitForm(); 
+        });
+    }
+    function closeModal() {
+        const modal = document.getElementById('confirmationModal');
+        modal.style.display = 'none';
+    }
+    function submitForm() {
+    const dropdowns = document.querySelectorAll('.orderStatusDropdown');
+    const formData = [];
+    dropdowns.forEach(dropdown => {
+        formData.push({
+            orderID: dropdown.getAttribute('data-orderid'),
+            status: dropdown.value
+        });
+    });
+    fetch('/updateOrderStatus', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
+        if (data.success) {
+            closeModal(); 
+            location.reload(); 
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        $('[data-toggle="popover"]').popover();
+        document.getElementById('orderStatusForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            openModal(); 
+        });
+    });
+</script>
+
+
+
+  
+    
+
+<%- include('footer') -%>
+</body>
+</html>
+<%- include('footer') -%>

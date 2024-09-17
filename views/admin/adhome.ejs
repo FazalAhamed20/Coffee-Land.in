@@ -1,0 +1,689 @@
+<%- include('header') -%>
+<%- include('nav') -%>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden; 
+  }
+
+ 
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    overflow-y: scroll;
+  }
+
+  header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    font-size: smaller;
+    z-index: 10;
+    height: 60px;
+  }
+
+  nav {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+  }
+
+  nav a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    margin: 0 10px;
+  }
+
+  .dashboard-container {
+   
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
+    margin-top: 30px;
+  }
+
+  .dashboard-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 15px;
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  canvas {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  footer {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }
+
+ 
+  .dashboard-card i {
+    font-size: 48px; 
+    margin-bottom: 10px;
+  }
+  .time-interval-selector {
+    margin-bottom: 20px;
+  }
+  .recent-orders-table {
+  width: 100%;
+  border-collapse: collapse; 
+  margin-top: 20px; 
+}
+
+.recent-orders-table th, .recent-orders-table td {
+  border: 1px solid #ddd; 
+  padding: 8px; 
+  text-align: left; 
+}
+
+.recent-orders-table th {
+  background-color: #f2f2f2;
+}
+
+.recent-orders-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9; 
+}
+.badge {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+  }
+
+  .badge-danger {
+    background-color: #dc3545; 
+    color: #fff;
+  }
+
+  .badge-warning {
+    background-color: #ffc107; 
+    color: #000;
+  }
+
+  .badge-info {
+    background-color: #17a2b8;
+    color: #fff;
+  }
+
+  .badge-primary {
+    background-color: #007bff; 
+    color: #fff;
+  }
+
+  .badge-success {
+    background-color: #28a745;
+    color: #fff;
+  }
+  
+/* RESET FORM ELEMENTS */
+.input-container input[type="date"],
+.input-container input[type="text"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+/* INPUT CONTAINER  */
+.input-container {
+  display:flex;
+  flex-direction: column;
+  width: auto;
+  height: auto;
+  min-width: 217px;
+  height: 60px;
+  padding: 5px 10px 10px 10px;
+  background: #fff;
+  border-radius: 8px;
+  filter: drop-shadow(0px 0px 3px #000);
+  -webkit-filter: drop-shadow(0px 0px 3px #000);
+  overflow: hidden;
+  cursor: pointer;
+}
+.input-container:hover, 
+.input-container:focus,
+.input-container:active {
+  transform: scale(1.1);
+  -webkit-transform: scale(1.1);
+}
+
+.input-container label {
+  position: relative;
+  width: 100%;
+  font-family: "Segoe UI";
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  line-height: 20px;
+  color: #09f;
+  margin-left: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.input-container input {
+  position: relative;
+  align-items: center;
+  width: auto;
+  height: auto;
+  font-family: "Lekton", Arial, sans-serif;
+font-weight: 600;
+  font-size: 22px;
+  letter-spacing: 0.05em;
+  line-height: 21px;
+  text-transform: uppercase;
+  margin-left: 0px;
+}
+
+/* BUTTON CONTAINER */
+.button-container {
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 197px;
+  height: 65px;
+  padding: 1px;
+  padding-bottom: 2px;
+  background: #09f;
+  border-radius: 8px;
+  filter: drop-shadow(0px 0px 3px #000);
+  -webkit-filter: drop-shadow(0px 0px 3px #000);
+  overflow: hidden;
+  cursor:pointer;
+}
+.button-container:hover, 
+.button-container:focus {
+  background: #09f;
+  filter: drop-shadow(0px 0px 3px #09f);
+  -webkit-filter: drop-shadow(0px 0px 3px #09f);
+}
+/* -- button -- */
+.button-container .button {
+  position: relative;
+  width: 100%;
+  min-height: 63px;
+  height:auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  background: #fff;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+.button-container:hover .button:hover  {
+  background: #000;
+  color: #fff;
+}
+.button-container:hover .button:active  {
+  background: #000;
+  color: #fff;
+  background: #09f;
+  filter: drop-shadow(0px 0px 3px #09f);
+  -webkit-filter: drop-shadow(0px 0px 3px #09f);
+}
+/* -- button ok -- */
+.button-container .button.ok {
+  background: #28A745;
+  color: #fff;
+}
+.button-container:hover .button.ok:hover {
+  background: green;
+  color: #09f;
+  text-shadow: 0px 0px 10px #09f;
+  -webkit-text-shadow: 0px 0px 10px #09f;
+}
+.button-container:hover .button.ok:active  {
+  color: #fff;
+  background: #09f;
+  filter: drop-shadow(0px 0px 3px #000);
+  -webkit-filter: drop-shadow(0px 0px 3px #000);
+}
+
+/* RESERVATION BOX */
+.reservation-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  height: auto;
+  padding: 20px;
+  border-radius: 7px;
+  background-color: rgba(255, 255, 255, 1);
+  z-index: 1;
+}
+
+.reservation-box .static {
+  position: relative;
+  display: flex;
+  align-items: center;
+  float: left;
+  width: auto;
+  margin-right: 20px;
+}
+
+.reservation-box .flex {
+  position: relative;
+  display: flex;
+  float: left;
+  flex-direction: table;
+  align-items: center;
+  gap: 20px;
+  width: auto;
+}
+
+.reservation-box .top {
+  display: flex;
+  flex-direction: table;
+}
+
+.reservation-box .bottom {
+  position: relative;
+  width: 100%;
+  text-align: right;
+}
+
+.reservation-box .info {
+  width: auto;
+  color: #000;
+  font-weight: 500;
+  text-decoration: none;
+  text-align: right;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.reservation-box .info:hover,
+.reservation-box .info:focus,
+.reservation-box .info:active {
+  color: #000;
+  border-bottom: 2px solid #09f;
+}
+
+/* RESERVATION BOX SMALL */
+.reservation-box.small,
+.reservation-box.small .flex {
+  flex-direction: column;
+}
+
+.reservation-box.small .top {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.reservation-box.small .static {
+  margin-right: 0px;
+}
+
+.reservation-box.small .bottom {
+  text-align: center;
+}
+
+.reservation-box.small .button-container {
+  min-width: 217px;
+}
+
+/* Responsive Styles */
+@media only screen and (max-width: 768px) {
+  .reservation-box .flex,
+  .reservation-box.small .flex {
+    flex-direction: column;
+  }
+
+  .reservation-box .static,
+  .reservation-box.small .static {
+    margin-right: 0;
+  }
+
+  .reservation-box .top,
+  .reservation-box.small .top {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .reservation-box .bottom,
+  .reservation-box.small .bottom {
+    text-align: center;
+  }
+
+  .reservation-box .info,
+  .reservation-box.small .info {
+    text-align: center;
+  }
+
+  .reservation-box .button-container,
+  .reservation-box.small .button-container {
+    min-width: auto;
+  }
+}
+
+/* ------------ Testkit ------------ */
+.test {
+  position: absolute;
+  top:30px;
+  left: 30px;
+  width: 66px;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid #000;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.test svg {
+  rotate: 0deg;
+}
+.test svg path{
+  fill: #000;
+}
+.test:hover {
+  background: rgba(255,255,255,1);
+}
+.test.small svg {
+  rotate: 90deg;
+}
+.responsive-chart {
+    width: 100%;
+    height: auto;
+}
+@media (min-width: 768px) {
+    /* Adjust the max-width and aspect ratio as needed */
+    .responsive-chart {
+        max-width: 100%;
+        
+        height: auto;
+    }
+}
+
+@media (min-width: 1200px) {
+    /* Adjust the max-width and aspect ratio as needed */
+    .responsive-chart {
+        max-width: 100%; 
+      
+        height: auto;
+    }
+}
+
+</style>
+
+
+
+  <header>
+    <h1>Admin Dashboard</h1>
+  </header>
+
+  <div class="dashboard-container">
+    <div class="dashboard-card">
+      <i class="fas fa-shopping-cart"></i>
+      <h2>Total Orders</h2>
+      <p><%= totalOrders %></p>
+    </div>
+
+    <div class="dashboard-card">
+      <i class="fas fa-box"></i>
+      <h2>Total Products Sold</h2>
+      <p><%= productQuantity %></p>
+    </div>
+
+    <div class="dashboard-card">
+      <i class="fas fa-users"></i>
+      <h2>Total Users</h2>
+      <p><%= totalUsers %></p>
+    </div>
+
+    <div style="width: 100%;" class="dashboard-graph-container">
+      <div class="time-interval-selector">
+        <label for="time-interval">Select Time Interval: </label>
+        <select id="time-interval" onchange="updateChart()">
+          <option value="daily">Daily</option>
+          <option value="monthly">Monthly</option>
+          <option value="yearly">Yearly</option>
+        </select>
+      </div>
+
+      <canvas id="myChart" class="responsive-chart"></canvas>
+
+    </div>
+
+    <div class="reservation-box">
+      <h2>Sales Report</h2>
+      <div class="top">
+        <div class="static">
+          <div class="input-container" id="date-picker-container">
+            <label for="startDate">Start-date</label>
+            <input type="date" id="startDate" class="date-field" name="date-from">
+          </div>
+        </div>
+        <div class="flex">
+          <div class="input-container" id="date-picker-container">
+            <label for="endDate">end-date</label>
+            <input type="date" id="endDate" class="date-field" name="date-to">
+          </div>
+          <div class="button-container">
+            <span class="button ok" onclick="downloadSalesReport()">Download</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="width: 100%;"> 
+      <h2>Recently Placed Orders</h2>
+      <table class="recent-orders-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Order Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for (const order of recentlyPlacedOrders) { %>
+            <% for (const product of order.products) { %>
+              <tr>
+                <td><%= order.orderID %></td>
+                <td><%= product.product.name || 'N/A' %></td>
+                <td><%= product.quantity %></td>
+                <td><%= order.orderDate.toISOString().split('T')[0] %></td>
+                <td>
+                  <span class="badge <%= order.status.toLowerCase() === 'cancelled' ? 'badge-danger' : (order.status.toLowerCase() === 'pending' ? 'badge-warning' : (order.status.toLowerCase() === 'processing' ? 'badge-info' : (order.status.toLowerCase() === 'shipped' ? 'badge-primary' : 'badge-success'))) %>">
+                    <%= order.status %>
+                  </span>
+                </td>
+              </tr>
+            <% } %>
+          <% } %>
+        </tbody>
+        
+      </table>
+    </div>
+  </div>
+  
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const video = document.getElementById('video');
+      const videoContainer = document.getElementById('video-container1');
+      const dashboardContainer = document.querySelector('.dashboard-container');
+      video.addEventListener('ended', () => {
+        videoContainer.style.opacity = 0;
+        setTimeout(() => {
+          dashboardContainer.style.opacity = 1;
+        }, 1000); 
+      });
+    });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    let selectedTimeInterval = 'daily'; 
+    function updateChart() {
+      selectedTimeInterval = document.getElementById('time-interval').value;
+      updateChartData(selectedTimeInterval);
+    }
+    function updateChartData(timeInterval) {
+      let timeUnit, unitStepSize, tooltipFormat;
+      if (timeInterval === 'weekly') {
+        timeUnit = 'week';
+        unitStepSize = 1; 
+        tooltipFormat = 'W YYYY';
+      } else if (timeInterval === 'monthly') {
+        timeUnit = 'month';
+        unitStepSize = 1; 
+        tooltipFormat = 'MMM YYYY'; 
+      } else if (timeInterval === 'yearly') {
+        timeUnit = 'year';
+        unitStepSize = 1; 
+        tooltipFormat = 'YYYY';
+      } else {
+        timeUnit = 'day';
+        unitStepSize = 1; 
+        tooltipFormat = 'MMM DD, YYYY'; 
+      }
+      const xValues = JSON.parse('<%- xValues %>');
+      const yValues = JSON.parse('<%- JSON.stringify(yValues) %>');
+      const formattedXValues = xValues.map(dateString => formatXLabel(dateString, timeInterval));
+      new Chart("myChart", {
+        type: "line",
+        data: {
+          labels: formattedXValues,
+          datasets: [{
+            label: 'Number of Orders',
+            fill: false,
+            lineTension: 0,
+            backgroundColor: "rgba(0,0,255,1.0)",
+            borderColor: "rgba(0,0,255,0.1)",
+            data: yValues
+          }]
+        },
+        options: {
+          scales: {
+            xAxes: [{
+              type: 'time',
+              time: {
+                unit: timeUnit,
+                unitStepSize: unitStepSize,
+                tooltipFormat: tooltipFormat,
+              },
+              scaleLabel: {
+                display: true,
+                labelString: 'Date'
+              }
+            }],
+            yAxes: [{
+              ticks: { min: 0, stepSize: 1 },
+              scaleLabel: {
+                display: true,
+                labelString: 'Number of Orders'
+              }
+            }]
+          },
+          elements: {
+            point: {
+              radius: 5,
+            },
+          },
+          tooltips: {
+            intersect: false,
+            mode: 'index',
+          },
+        }
+      });
+    }
+
+    function formatXLabel(dateString, timeInterval) {
+      const date = new Date(dateString);
+
+      if (timeInterval === 'weekly') {
+        const weekNumber = getISOWeek(date);
+        return `${getOrdinal(weekNumber)} week ${date.getFullYear()}`;
+      } else if (timeInterval === 'monthly') {
+        return `${getMonthName(date.getMonth())} ${date.getFullYear()}`;
+      } else if (timeInterval === 'yearly') {
+        return `${date.getFullYear()}`;
+      } else {
+        return `${getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`;
+      }
+    }
+    function getMonthName(monthIndex) {
+      const months = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      ];
+      return months[monthIndex];
+    }
+
+    function getISOWeek(date) {
+      const d = new Date(date);
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+      const yearStart = new Date(d.getFullYear(), 0, 1);
+      return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    }
+
+    function getOrdinal(number) {
+      const suffixes = ['st', 'nd', 'rd'];
+      const v = number % 100;
+      return number + (suffixes[(v - 20) % 10] || suffixes[v] || 'th');
+    }
+
+    document.getElementById('time-interval').addEventListener('change', function() {
+      updateChart();
+    });
+
+    updateChartData(selectedTimeInterval);
+  });
+</script>
+
+<script>
+  function downloadSalesReport() {
+    var startDate = document.getElementById('startDate').value;
+    var endDate = document.getElementById('endDate').value;
+    if (startDate === "" || endDate === "") {
+      alert("Please select both start and end dates.");
+      return;
+    }
+    var downloadURL = '/download-sales-report?startDate=' + startDate + '&endDate=' + endDate;
+    window.open(downloadURL, '_blank');
+  }
+</script>
+
+  <%- include('footer') -%>
+</body>
+</html>
